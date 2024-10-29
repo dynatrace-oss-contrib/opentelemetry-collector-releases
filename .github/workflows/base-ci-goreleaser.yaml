@@ -64,11 +64,20 @@ jobs:
           go-version: '1.23'
           check-latest: true
 
+      - name: Get latest finished run ID from contrib repo build-and-test
+        id: get-run-id
+        run: |
+          run_id=$(gh run list --branch main --workflow build-and-test --repo open-telemetry/opentelemetry-collector-contrib --limit 1 --json databaseId)
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
       - name: Generate the sources using latest main for ${{ inputs.distribution }}
         if: inputs.latest == true
-        env:
-          DISTRIBUTIONS: ${{ inputs.distribution }}
-        run: make generate-sources-dev
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: collector-binaries-linux-amd64
+          repository: open-telemetry/opentelemetry-collector-contrib
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.get-run-id.run_id }}
 
       - name: Generate the sources for ${{ inputs.distribution }}
         if: inputs.latest != true
