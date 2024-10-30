@@ -79,7 +79,7 @@ jobs:
           name: collector-binaries-linux-amd64
           repository: open-telemetry/opentelemetry-collector-contrib
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ steps.get-run-id.run_id }}
+          run-id: ${{ steps.get-run-id.outputs.run_id }}
 
       - name: Generate the sources for ${{ inputs.distribution }}
         if: inputs.latest != true
