@@ -66,6 +66,8 @@ jobs:
 
       - name: Get latest finished run ID from contrib repo build-and-test
         id: get-run-id
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           run_id=$(gh run list --branch main --workflow build-and-test --repo open-telemetry/opentelemetry-collector-contrib --limit 1 --json databaseId)
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
