@@ -12,10 +12,6 @@ on:
       goarch:
         required: true
         type: string
-      runner_os:
-        required: false
-        type: string
-        default: ubuntu-24.04
       nightly:
         required: false
         type: string
@@ -48,6 +44,8 @@ jobs:
       matrix:
         GOOS: ${{ fromJSON(inputs.goos) }}
         GOARCH: ${{ fromJSON(inputs.goarch) }}
+        runner-os:
+          - ubuntu-24.04
         exclude:
           - GOOS: darwin
             GOARCH: "386"
@@ -59,7 +57,14 @@ jobs:
             GOARCH: arm
           - GOOS: darwin
             GOARCH: riscv64
-    runs-on: ${{ inputs.runner_os }}
+        include:
+          - GOOS: windows
+            GOARCH: 386
+            runner-os: windows-2022
+          - GOOS: windows
+            GOARCH: amd64
+            runner-os: windows-2022
+    runs-on: ${{ matrix.runner-os }}
     permissions:
       packages: write
 
@@ -176,7 +181,7 @@ jobs:
 
   release:
     name: Release
-    runs-on: ${{ inputs.runner_os }}
+    runs-on: ubuntu-24.04
     needs: prepare
 
     permissions:
