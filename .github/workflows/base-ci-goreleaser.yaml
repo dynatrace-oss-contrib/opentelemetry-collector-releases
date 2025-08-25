@@ -167,7 +167,7 @@ jobs:
         run: mv distributions/otelcol-contrib/dist/**/* distributions/otelcol-contrib/artifacts/
 
       - name: Show built or downloaded content
-        if: inputs.distribution == 'otelcol-contrib'
+        if: inputs.distribution == 'otelcol-contrib' && matrix.GOOS != 'windows'
         run: ls -laR distributions/otelcol-contrib/artifacts
 
       - name: Run GoReleaser for ${{ inputs.distribution }}
@@ -192,7 +192,7 @@ jobs:
         run: cat ./distributions/${{ inputs.distribution }}/dist/**/metadata.json
 
       - name: Print dist folder contents
-        if: always()
+        if: always() && matrix.GOOS != 'windows'
         run: ls -laR ./distributions/${{ inputs.distribution }}/dist
 
       - name: Upload linux service packages
