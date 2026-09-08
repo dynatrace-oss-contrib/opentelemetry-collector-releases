@@ -14,7 +14,10 @@ git fetch --tags
 # would make fresh tags look weeks old. Group by the shared suffix, then take the
 # MAX_NIGHTLY_RUNS oldest runs (`sort -u` on `nightly.<YYYYMMDDHHMM>` is
 # chronological).
-mapfile -t RUNS_TO_DELETE < <(
+# Collect every run older than the cutoff first, then slice the array. Piping the
+# loop straight into `head` closes the pipe early and makes the loop's last `echo`
+# fail with "write error: Broken pipe".
+mapfile -t OLD_RUNS < <(
   git tag -l \
     | grep -oE 'nightly\.[0-9]{12}$' \
     | sort -u \
@@ -26,9 +29,10 @@ mapfile -t RUNS_TO_DELETE < <(
         if [ "$RUN_DATE" -lt "$CUTOFF" ]; then
           echo "$RUN"
         fi
-      done \
-    | head -n "$MAX_NIGHTLY_RUNS"
+      done
 )
+
+RUNS_TO_DELETE=("${OLD_RUNS[@]:0:${MAX_NIGHTLY_RUNS}}")
 
 if [ ${#RUNS_TO_DELETE[@]} -eq 0 ]; then
   echo "No nightly git tags older than the cutoff"

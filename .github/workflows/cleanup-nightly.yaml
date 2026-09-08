@@ -75,7 +75,6 @@ jobs:
 
       - name: Delete nightly Docker Hub tags older than 2 weeks
         env:
-          DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN_COLLECTOR_RELEASES }}
           DOCKERHUB_ORG: otel
         run: ./.github/workflows/scripts/cleanup-nightly-dockerhub.sh
